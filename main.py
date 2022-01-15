@@ -1,69 +1,68 @@
-import pygame
-
 from Sinai import Sinai
-from Line import Line
-from Circle import Circle
 from Point import Point
-
-s = Sinai(500, 500)
-# s.calculate(Point(401, 200), 185, 20)
-s.calculate(Point(170, 100), 80, 3)
-# s.calculate(Point(400, 250), 30, 10)
-
-# s.calculate(Point(250, 50), 270, 1)
-# s.calculate(Point(450, 250), 0, 1)
-# s.calculate(Point(50, 250), 180, 1)
-# s.calculate(Point(250, 450), 90, 1)
-
-for l in s.lines:
-    print('a: ' + str(l.a) + ' b : ' + str(l.b) + ' x: ' + str(l.start.x) + ' y: ' + str(l.start.y) + ' angle: ' + str(
-        l.angle))
-    # print('x: ' + str(l.start.x) + ' y: ' + str(l.start.y) + ' angle: ' + str(l.angle))
-
-# Simple pygame program
-
-# Import and initialize the pygame library
 import pygame
+
+size = (800, 800)
+depth = 1
+max_depth = 30 + 1
+start = Point(300, 20)
+s = Sinai(size)
+tab = []
+tab.append(s.calculate(start, 30, max_depth))
+tab.append(s.calculate(start, 30.00001, max_depth))
+tab.append(s.calculate(start, 29.99999, max_depth))
+tab.append(s.calculate(start, 30.00005, max_depth))
+tab.append(s.calculate(start, 29.99995, max_depth))
+
+for lines in tab:
+    for l in lines:
+        print('a: ' + str(l.a) + ' b : ' + str(l.b) + ' x: ' + str(l.start.x) + ' y: ' + str(
+            l.start.y) + ' angle: ' + str(
+            l.angle))
+        # print('x: ' + str(l.start.x) + ' y: ' + str(l.start.y) + ' angle: ' + str(l.angle))
 
 pygame.init()
-
-# Set up the drawing window
-screen = pygame.display.set_mode([500, 500])
-
-# Run until the user asks to quit
+screen = pygame.display.set_mode(size)
+font = pygame.font.Font(None, 36)
 running = True
 while running:
 
-    # Did the user click the window close button?
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                running = False
+            if event.key == pygame.K_LEFT:
+                depth -= 1
+                depth %= max_depth
+            if event.key == pygame.K_RIGHT:
+                depth += 1
+                depth %= max_depth
+    # clear screen
+    screen.fill((0, 0, 0))
+    depth_text = font.render(str(depth), False, (255, 255, 255))
+    screen.blit(depth_text, [size[0] / 2 - depth_text.get_rect().centerx, size[1] / 2 - depth_text.get_rect().centery])
+    # central circle
+    pygame.draw.circle(screen, (255, 255, 255), (s.circle.center.x, s.circle.center.y), s.circle.r, 1)
 
-    # Fill the background with white
-    # screen.fill((255, 255, 255))
-
-    # Draw a solid blue circle in the center
-    pygame.draw.circle(screen, (0, 0, 255), (s.circle.center.x, s.circle.center.y), s.circle.r)
-
+    # walls
     walls = []
     for w in s.walls:
         walls.append(pygame.Vector2(w.start.x, w.start.y))
-    pygame.draw.lines(screen, (255, 255, 255), True, walls)
+    pygame.draw.lines(screen, (255, 255, 255), True, walls, 4)
 
-    lines = []
-    for l in s.lines:
-        lines.append(pygame.Vector2(l.start.x, l.start.y))
-    pygame.draw.lines(screen, (255, 0, 0), False, lines)
+    colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (0, 255, 255), (255, 0, 255)]
 
-    # if len(s.tangents):
-    #     tangents = []
-    #     for l in s.tangents:
-    #         pygame.draw.line(screen, (0, 255, 0), (l.start.x - 10, l.y(l.start.x - 10)),
-    #                          (l.start.x + 10, l.y(l.start.x + 10)))
-    #         pygame.draw.line(screen, (125, 0, 255), (l.start.x, l.start.y), (s.circle.center.x, s.circle.center.y))
+    # trajectories
+    for i, lines in enumerate(tab):
+        lin = []
+        for j, l in enumerate(lines):
+            if j > depth:
+                break
+            lin.append(pygame.Vector2(l.start.x, l.start.y))
+        if len(lin) > 1:
+            pygame.draw.lines(screen, colors[i % len(colors)], False, lin)
 
-    # Flip the display
     pygame.display.flip()
-
-    # Done! Time to quit.
 pygame.quit()

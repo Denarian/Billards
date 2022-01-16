@@ -17,48 +17,6 @@ class Line:
     def y(self, x):
         return self.a * x + self.b
 
-    def _check_if_wall_is_in_front(self, wall):
-        if self.start.x - wall.start.x != 0:
-            a1 = (self.start.y - wall.start.y) / (self.start.x - wall.start.x)
-            angle1 = math.atan(a1) * 180 / math.pi
-        elif self.start.y < wall.start.y:
-            angle1 = 90
-        else:
-            angle1 = -90
-
-        if self.start.x - wall.end.x != 0:
-            a2 = (self.start.y - wall.end.y) / (self.start.x - wall.end.x)
-            angle2 = math.atan(a2) * 180 / math.pi
-        elif self.start.y < wall.end.y:
-            angle2 = 90
-        else:
-            angle2 = -90
-
-        if self.angle > 180:
-            angle = 0 - (360 - self.angle)
-        else:
-            angle = self.angle
-        if angle1 < angle2:
-            return angle1 <= angle <= angle2
-        else:
-            return angle2 <= angle <= angle1
-
-    def _check_if_circle_is_in_front(self, circle: Circle):
-        if self.angle == 0:
-            return self.start.x < circle.center.x + circle.r
-        elif self.angle == 180:
-            return self.start.x > circle.center.x - circle.r
-        elif self.angle == 90:
-            return self.start.y < circle.center.y + circle.r
-        elif self.angle == 270:
-            return self.start.y > circle.center.y - circle.r
-        elif self.angle < 180:
-            return (self.y(circle.center.x - circle.r) > circle.center.y) or (
-                    self.y(circle.center.x + circle.r) > circle.center.y)
-        else:
-            return (self.y(circle.center.x - circle.r) < circle.center.y) or (
-                    self.y(circle.center.x + circle.r) < circle.center.y)
-
     def find_collision_wall(self, wall):
         impact = self.calculate_collision_point_wall(wall)
         if impact is False:

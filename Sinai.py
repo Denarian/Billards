@@ -26,7 +26,7 @@ class Sinai:
             line: L.Line = lines[-1]
             impact = line.find_collision_circle(self.circle)
             if self.circle.check_if_on_circle(line.start) is False and impact:
-                print('k')
+                # print('k')
                 tangent = self.circle.calculate_tangent_in_point(impact)
                 self.tangents.append(tangent)
                 angle = line.calculate_deflection_angle_wall(tangent)
@@ -39,6 +39,6 @@ class Sinai:
                     if impact:
                         angle = line.calculate_deflection_angle_wall(w)
                         lines.append(L.Line(impact, angle))
-                        print(w.angle)
+                        # print(w.angle)
                         break
         return lines

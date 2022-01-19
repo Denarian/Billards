@@ -35,6 +35,10 @@ class Line:
             else:
                 y2 = wall.start.y
                 y1 = wall.end.y
+            x1 -= 0.0000001
+            x2 += 0.0000001
+            y1 -= 0.0000001
+            y2 += 0.0000001
             if (x1 <= impact.x <= x2) and (y1 <= impact.y <= y2):
                 return impact
         else:
@@ -57,7 +61,11 @@ class Line:
 
     def find_collision_circle(self, circle: Circle):
         if self.angle in [90, 270]:
-            return (circle.center.x - circle.r) < self.start.x < (circle.center.x + circle.r)
+            if (circle.center.x - circle.r) < self.start.x < (circle.center.x + circle.r):
+                impact = self.calculate_collision_point_circle(circle)
+                if self._check_if_collision_is_valid(impact):
+                    return impact
+            return False
         else:
             distance = (self.a * circle.center.x - circle.center.y + self.b) / math.sqrt(1 + self.a * self.a)
             if abs(distance) < circle.r:

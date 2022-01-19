@@ -27,7 +27,7 @@ class Circle:
             else:
                 angle = 180
             import Line as l
-            print(angle)
+            # print(angle)
             return l.Line(point, angle)
         else:
             return False
